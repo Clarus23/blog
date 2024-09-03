@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragment/head::head"></head>
+
+<body>
+    <header th:replace="fragment/header::header"></header>
+    <div class="container mt-5">
+        <div class="row">
+            <!-- 리스트 -->
+            <div class="col-lg-8">
+                <table class="table table-hover">
+                    <thead>
+                    <tr>
+                        <th scope="col">No.</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Creator</th>
+                        <th scope="col">Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="post : ${posts}" th:onclick="|location.href='@{/post/}| + ${post.getId()} + |'|" style="cursor: pointer">
+                        <td th:text="${post.getId()}"/>
+                        <td th:text="${post.getTitle()}"/>
+                        <td th:text="${post.getCreatorId()}"/>
+                        <td th:text="${#temporals.format(post.getCreatedDate(), 'yyyy-MM-dd HH:mm')}"/>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <button class="btn btn-dark" onclick="location.href='/post/write'"> 글쓰기 </button>
+
+                <!-- 페이징 처리 시작 -->
+                <div th:if="${!posts.isEmpty()}">
+                    <ul class="pagination justify-content-center">
+                        <li class="page-item">
+                            <a th:if="${posts.getNumber()<5}" class="page-link" th:href="@{|?page=0|}">
+                                <span>Previous</span>
+                            </a>
+                            <a th:unless="${posts.getNumber()<5}" class="page-link" th:href="@{|?page=${posts.getNumber()-5}|}">
+                                <span>Previous</span>
+                            </a>
+                        </li>
+                        <li th:each="page: ${#numbers.sequence(posts.getNumber()-5, posts.getNumber()+5)}"
+                            th:if="${page >= 0 and page < posts.getTotalPages()}"
+                            th:classappend="${page == posts.getNumber()} ? 'active'"
+                            class="page-item">
+                            <a th:text="${page}" class="page-link" th:href="@{|?page=${page}|}"/>
+                        </li>
+                        <li class="page-item">
+                            <a th:if="${posts.getNumber()>=posts.getTotalPages()-5}" class="page-link" th:href="@{|?page=${posts.getTotalPages()-1}|}">
+                                <span>Next</span>
+                            </a>
+                            <a th:unless="${posts.getNumber()>=posts.getTotalPages()-5}" class="page-link" th:href="@{|?page=${posts.getNumber()+5}|}">
+                                <span>Next</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <!-- 페이징 처리 끝 -->
+            </div>
+
+            <!-- Side widgets-->
+            <div class="col-lg-4">
+                <!-- Search widget-->
+                <div class="card mb-4">
+                    <div class="card-header">Search</div>
+                    <div class="card-body">
+                        <div class="input-group">
+                            <input class="form-control" type="text" placeholder="Enter search term..." aria-label="Enter search term..." aria-describedby="button-search" />
+                            <button class="btn btn-primary" id="button-search" type="button">Go!</button>
+                        </div>
+                    </div>
+                </div>
+                <!-- Categories widget-->
+                <div class="card mb-4">
+                    <div class="card-header">Categories</div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <ul class="list-unstyled mb-0">
+                                    <li><a href="#!">Web Design</a></li>
+                                    <li><a href="#!">HTML</a></li>
+                                    <li><a href="#!">Freebies</a></li>
+                                </ul>
+                            </div>
+                            <div class="col-sm-6">
+                                <ul class="list-unstyled mb-0">
+                                    <li><a href="#!">JavaScript</a></li>
+                                    <li><a href="#!">CSS</a></li>
+                                    <li><a href="#!">Tutorials</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Side widget-->
+                <div class="card mb-4">
+                    <div class="card-header">Side Widget</div>
+                    <div class="card-body">You can put anything you want inside of these side widgets. They are easy to use, and feature the Bootstrap 5 card component!</div>
+                </div>
+        </div>
+    </div>
+
+
+    <footer th:replace="fragment/footer::footer"></footer>
+</body>
+</html>
