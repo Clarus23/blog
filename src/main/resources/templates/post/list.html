@@ -2,6 +2,28 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="fragment/head::head"></head>
 
+<style>
+    .page-link {
+        color: #000;
+        background-color: #fff;
+        border: 1px solid #ccc;
+    }
+
+    .page-item.active .page-link {
+        z-index: 1;
+        color: #fff;
+        font-weight:bold;
+        background-color: #000;
+        border-color: #ccc;
+    }
+
+    .page-link:focus, .page-link:hover {
+        color: #000;
+        background-color: #fafafa;
+        border-color: #ccc;
+    }
+</style>
+
 <body>
     <header th:replace="fragment/header::header"></header>
     <div class="container mt-5">
@@ -27,7 +49,7 @@
                     </tbody>
                 </table>
 
-                <button class="btn btn-dark" onclick="location.href='/post/write'"> 글쓰기 </button>
+                <button class="btn btn-outline-dark" onclick="location.href='/post/write'"> 글쓰기 </button>
 
                 <!-- 페이징 처리 시작 -->
                 <div th:if="${!posts.isEmpty()}">
@@ -98,9 +120,9 @@
                     <div class="card-header">Side Widget</div>
                     <div class="card-body">You can put anything you want inside of these side widgets. They are easy to use, and feature the Bootstrap 5 card component!</div>
                 </div>
+            </div>
         </div>
     </div>
-
 
     <footer th:replace="fragment/footer::footer"></footer>
 </body>

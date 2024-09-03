@@ -16,9 +16,17 @@
                             <!-- Post title-->
                             <h1 class="fw-bolder mb-1" th:utext="${post.getTitle()}"></h1>
                             <!-- Post meta content-->
-                            <div class="text-muted fst-italic mb-2" th:text="${'생성일자 : ' + #temporals.format(post.getCreatedDate(), 'yyyy-MM-dd HH:mm')}"></div>
-                            <div class="text-muted fst-italic mb-2" th:text="${'수정일자 : ' + #temporals.format(post.getModifiedDate(), 'yyyy-MM-dd HH:mm')}"></div>
-                            <div class="text-muted fst-italic mb-2" th:text="${'작성자 : ' + post.getCreatorId()}"></div>
+                            <div class="row justify-content-end">
+                                <div class="text-muted fst-italic mb-2 col-4" th:text="${'생성일자 : ' + #temporals.format(post.getCreatedDate(), 'yyyy-MM-dd HH:mm')}"></div>
+                                <div class="text-muted fst-italic mb-2 col-4" th:text="${'수정일자 : ' + #temporals.format(post.getModifiedDate(), 'yyyy-MM-dd HH:mm')}"></div>
+                            </div>
+                            <div class="row justify-content-end">
+                                <div class="text-muted fst-italic mb-2 col-4" th:text="${'작성자 : ' + post.getCreatorId()}"></div>
+                                <div class="btn-group col-4" role="group" aria-label="Basic outlined example">
+                                    <button class="btn btn-outline-dark" th:onclick="|location.href='@{/post/modify/}| + ${post.getId()} + |'|"> 수정 </button>
+                                    <button class="btn btn-outline-dark"> 삭제 </button>
+                                </div>
+                            </div>
                             <!-- Post categories 태그기능도 추가 해야함-->
 <!--                            <a class="badge bg-secondary text-decoration-none link-light" href="#!">Web Design</a>-->
 <!--                            <a class="badge bg-secondary text-decoration-none link-light" href="#!">Freebies</a>-->
@@ -30,7 +38,6 @@
                             <p class="fs-5 mb-4" th:utext="${post.getContent()}"></p>
                         </section>
                     </article>
-
 
                     <!-- Comments section 추후 댓글 기능 구현-->
                     <section class="mb-5">

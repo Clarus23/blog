@@ -12,8 +12,8 @@
 <div class="container my-3">
     <form method="post">
         <input class="form-control-plaintext" type="text" id="creatorId" name="creatorId" value="admin" readonly/>
-        <input class="form-control form-control-lg" type="text" id="title" name="title" placeholder="제목을 입력하세요"/>
-        <textarea id="summernote" name="content"></textarea>
+        <input class="form-control form-control-lg" type="text" id="title" name="title" th:value="${post.getTitle()}" placeholder="제목을 입력하세요"/>
+        <textarea id="summernote" name="content" th:utext="${post.getContent()}"></textarea>
 
         <button class="btn btn-dark">작성</button>
     </form>

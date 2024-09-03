@@ -37,10 +37,10 @@ public class PostsController {
 
     @GetMapping("/post/write")
     public String newPost(Model model) {
+        model.addAttribute("post", new Post());
 
         return "post/write";
     }
-
     @RequestMapping(value="/post/write", method=RequestMethod.POST)
     public String createPost(Post newPost) {
         logger.info(newPost.toString());
@@ -48,6 +48,20 @@ public class PostsController {
 
         return "redirect:/post";
     }
+    @GetMapping("/post/modify/{id}")
+    public String modifyPost(@PathVariable Long id, Model model) {
+        model.addAttribute("post", postService.getPost(id));
+
+        return "post/write";
+    }
+    @RequestMapping(value="/post/modify/{id}", method=RequestMethod.POST)
+    public String modifyPost(@PathVariable Long id, Post modifiedPost) {
+        logger.info(modifiedPost.toString());
+        postService.update(id, modifiedPost);
+
+        return "redirect:/post";
+    }
+
 
 
 }
