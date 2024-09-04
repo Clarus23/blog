@@ -3,6 +3,7 @@ package kr.pe.hw.blog.service;
 import kr.pe.hw.blog.domain.Post;
 import kr.pe.hw.blog.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -38,8 +39,8 @@ public class PostService {
      * @param post
      * @return post.id
      */
-    public Long update(Post post) {
-        Post oldPost = postRepository.findById(post.getId()).orElseThrow();
+    public Long update(Long id, Post post) {
+        Post oldPost = postRepository.findById(id).orElseThrow();
 
         oldPost.setTitle(post.getTitle());
         oldPost.setContent(post.getContent());
@@ -51,11 +52,14 @@ public class PostService {
      * @param id
      * @return post.id
      */
-    public Long delete(Long id) {
-        Post deletedPost = postRepository.findById(id).orElseThrow();
+    public String delete(Long id) {
+        try {
+            postRepository.deleteById(id);
+        } catch (EmptyResultDataAccessException e) {
+            return "삭제에 실패하였습니다. 해당 게시글을 찾을 수 없습니다.";
+        }
 
-        postRepository.delete(deletedPost);
-        return deletedPost.getId();
+        return "해당 게시글을 삭제 하였습니다.";
     }
 
     public Post getPost(long id) {
