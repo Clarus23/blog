@@ -24,7 +24,10 @@
                                 <div class="text-muted fst-italic mb-2 col-4" th:text="${'작성자 : ' + post.getCreatorId()}"></div>
                                 <div class="btn-group col-4" role="group" aria-label="Basic outlined example">
                                     <button class="btn btn-outline-dark" th:onclick="|location.href='@{/post/modify/}| + ${post.getId()} + |'|"> 수정 </button>
-                                    <button class="btn btn-outline-dark"> 삭제 </button>
+                                    <form class="btn btn-outline-dark" th:action="@{/post/delete/{id}(id=${post.getId()})}" method="post" onclick="this.submit();">
+                                        <input type="hidden" name="id" th:value="${post.getId()}"/>
+                                        삭제
+                                    </form>
                                 </div>
                             </div>
                             <!-- Post categories 태그기능도 추가 해야함-->
