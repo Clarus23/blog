@@ -20,7 +20,7 @@ public class PostsController {
         this.postService = postService;
     }
 
-    @GetMapping("/post")
+    @GetMapping("/post/list")
     public String list(Model model, @RequestParam(value = "page", defaultValue="0") int page) {
         Page<Post> posts = postService.findPostPages(page);
         model.addAttribute("posts", posts);
