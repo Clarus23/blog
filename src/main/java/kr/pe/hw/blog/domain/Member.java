@@ -3,15 +3,23 @@ package kr.pe.hw.blog.domain;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Entity
 @Getter @Setter @ToString
-public class Member {
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class Member implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -30,18 +38,26 @@ public class Member {
     @Column(nullable = false)
     String phone;
 
-    @Enumerated(EnumType.STRING)
-    Role permissionLevel;
+//    @Enumerated(EnumType.STRING)
+//    Role permissionLevel;
+    @ElementCollection(fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<String> roles = new ArrayList<>();
 
-    public Member() {}
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles.stream()
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+    }
 
-    public Member(Long id, String userId, String userPwd, String name, String eMail, String phone, Role permissionLevel) {
-        this.id = id;
-        this.userId = userId;
-        this.userPwd = userPwd;
-        this.name = name;
-        this.eMail = eMail;
-        this.phone = phone;
-        this.permissionLevel = permissionLevel;
+    @Override
+    public String getPassword() {
+        return userPwd;
+    }
+
+    @Override
+    public String getUsername() {
+        return userId;
     }
 }
