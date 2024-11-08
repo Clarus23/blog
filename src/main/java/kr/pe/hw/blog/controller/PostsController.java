@@ -28,7 +28,7 @@ public class PostsController {
         return "post/list";
     }
 
-    @GetMapping("/post/{id}")
+    @GetMapping("/post/detail/{id}")
     public String detail(@PathVariable Long id, Model model) {
         model.addAttribute("post", postService.getPost(id));
 

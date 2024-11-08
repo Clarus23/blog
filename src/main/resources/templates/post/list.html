@@ -40,7 +40,7 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="post : ${posts}" th:onclick="|location.href='@{/post/}| + ${post.getId()} + |'|" style="cursor: pointer">
+                    <tr th:each="post : ${posts}" th:onclick="|location.href='@{/post/detail/}| + ${post.getId()} + |'|" style="cursor: pointer">
                         <td th:text="${post.getId()}"/>
                         <td th:text="${post.getTitle()}"/>
                         <td th:text="${post.getCreatorId()}"/>
