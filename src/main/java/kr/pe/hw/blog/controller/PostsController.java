@@ -2,6 +2,7 @@ package kr.pe.hw.blog.controller;
 
 import kr.pe.hw.blog.domain.Post;
 import kr.pe.hw.blog.service.PostService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.logging.Logger;
 
+@Slf4j
 @Controller
 public class PostsController {
     Logger logger = Logger.getLogger(PostsController.class.getName());
@@ -46,7 +48,7 @@ public class PostsController {
         logger.info(newPost.toString());
         postService.save(newPost);
 
-        return "redirect:/post";
+        return "redirect:/post/list";
     }
     @GetMapping("/post/modify/{id}")
     public String modifyPost(@PathVariable Long id, Model model) {
@@ -59,13 +61,13 @@ public class PostsController {
         logger.info(modifiedPost.toString());
         postService.update(id, modifiedPost);
 
-        return "redirect:/post";
+        return "redirect:/post/list";
     }
 
     @RequestMapping(value="/post/delete/{id}", method=RequestMethod.POST)
     public String deletePost(@PathVariable Long id) {
         String msg = postService.delete(id);
         logger.info(msg);
-        return "redirect:/post";
+        return "redirect:/post/list";
     }
 }
