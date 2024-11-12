@@ -34,7 +34,9 @@ public class PostsController {
     @GetMapping("/post/detail/{id}")
     public String detail(@PathVariable Long id, Model model) {
         model.addAttribute("post", postService.getPost(id));
+
         model.addAttribute("userId", SecurityUtil.getCurrentUser());
+        model.addAttribute("userRole", SecurityUtil.getCurrentUserRole());
 
         return "post/detail";
     }

@@ -12,4 +12,13 @@ public class SecurityUtil {
 
         return authentication.getName();
     }
+
+    public static String getCurrentUserRole() {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication == null || authentication.getAuthorities().iterator().next().getAuthority() == null) {
+            throw new RuntimeException("No authentication found");
+        }
+
+        return authentication.getAuthorities().iterator().next().getAuthority();
+    }
 }
