@@ -1,5 +1,7 @@
 package kr.pe.hw.blog.service;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import kr.pe.hw.blog.config.TokenProvider;
 import kr.pe.hw.blog.controller.MemberController;
 import kr.pe.hw.blog.domain.Member;
@@ -44,9 +46,7 @@ public class MemberService implements UserDetailsService{
     }
 
     @Transactional
-    public TokenDto signIn(SignInDto signInDto) {
-        String username = signInDto.getUsername();
-        String password = signInDto.getPassword();
+    public TokenDto signIn(String username, String password) {
 
         //1. username + password 를 기반으로 Authentication 객체 생성
         //이때 authentication 은 인증 여부를 확인하는 authenticated 값이 false
@@ -88,30 +88,4 @@ public class MemberService implements UserDetailsService{
         roles.add("USER"); // user권한 부여
         return MemberDto.toDto(memberRepository.save(signUpDto.toEntity(encodedPassword, roles)));
     }
-
-//    @Override
-//    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
-//        Optional<Member> member = memberRepository.findByUserId(username);
-//
-//        if(member.isPresent()) {
-//            UserBuilder userBuilder = User.withUsername(username);
-//            userBuilder.password(member.get().getUserPwd());
-//            userBuilder.roles(member.get().getPermissionLevel().getDescription());
-//
-//            return userBuilder.build();
-//        }
-//
-//        return null;
-//    }
-
-//    public Long save(Member member) {
-//        if(memberRepository.findByUserId(member.getUserId()).isPresent()) {
-//            return null;
-//        }
-//
-//        member.setUserPwd(passwordEncoder.encode(member.getUserPwd()));
-//        member.setPermissionLevel(Role.ROLE_USER);
-//        memberRepository.save(member);
-//        return member.getId();
-//    }
 }

@@ -2,6 +2,7 @@ package kr.pe.hw.blog.controller;
 
 import kr.pe.hw.blog.domain.Post;
 import kr.pe.hw.blog.service.PostService;
+import kr.pe.hw.blog.util.SecurityUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,6 +34,7 @@ public class PostsController {
     @GetMapping("/post/detail/{id}")
     public String detail(@PathVariable Long id, Model model) {
         model.addAttribute("post", postService.getPost(id));
+        model.addAttribute("userId", SecurityUtil.getCurrentUser());
 
         return "post/detail";
     }

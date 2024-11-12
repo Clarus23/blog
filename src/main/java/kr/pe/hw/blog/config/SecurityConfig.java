@@ -29,7 +29,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/assets/**", "css/**", "js/**", "fragment/**").permitAll() //bootstrap 이용을 위해 접근 허용
                         .requestMatchers("/", "/member/sign-up", "/member/sign-in", "/post/list").permitAll() // 회원가입, 로그인 페이지는 누구나 접근 가능
-                        .requestMatchers("/member/test", "/post/{id}").hasRole("USER")
+                        .requestMatchers("/post/detail/**").hasRole("USER")
                         .anyRequest().authenticated()) // 그 외의 페이지는 인증 필요
                 .formLogin(AbstractHttpConfigurer::disable)
                 //JWT 인증을 위하여 직접 구현한 필터를 UsernamePasswordAuthenticationFilter 전에 실행
