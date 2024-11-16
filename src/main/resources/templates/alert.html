@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>HW's First Blog</title>
+</head>
+<script th:inline="javascript">
+    const msg = [[${msg}]];
+    const url = [[${url}]];
+
+    alert(msg);
+    location.href = url;
+</script>
+</html>

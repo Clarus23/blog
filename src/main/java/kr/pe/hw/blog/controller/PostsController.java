@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 
 @Slf4j
 @Controller
+@RequestMapping("/post")
 public class PostsController {
     Logger logger = Logger.getLogger(PostsController.class.getName());
     private final PostService postService;
@@ -23,15 +24,16 @@ public class PostsController {
         this.postService = postService;
     }
 
-    @GetMapping("/post/list")
+    @GetMapping("/list")
     public String list(Model model, @RequestParam(value = "page", defaultValue="0") int page) {
         Page<Post> posts = postService.findPostPages(page);
         model.addAttribute("posts", posts);
+        model.addAttribute("userId", SecurityUtil.getCurrentUser()); // default : anonymousUser
 
         return "post/list";
     }
 
-    @GetMapping("/post/detail/{id}")
+    @GetMapping("/detail/{id}")
     public String detail(@PathVariable Long id, Model model) {
         model.addAttribute("post", postService.getPost(id));
 
@@ -41,37 +43,44 @@ public class PostsController {
         return "post/detail";
     }
 
-    @GetMapping("/post/write")
+    @GetMapping("/write")
     public String newPost(Model model) {
         model.addAttribute("post", new Post());
+        model.addAttribute("userId", SecurityUtil.getCurrentUser());
 
         return "post/write";
     }
-    @RequestMapping(value="/post/write", method=RequestMethod.POST)
-    public String createPost(Post newPost) {
+    @RequestMapping(value="/write", method=RequestMethod.POST)
+    public String createPost(Post newPost, Model model) {
         logger.info(newPost.toString());
         postService.save(newPost);
 
-        return "redirect:/post/list";
+        model.addAttribute("msg", "게시글을 작성하였습니다.");
+        model.addAttribute("url", "/post/list");
+        return "/alert";
     }
-    @GetMapping("/post/modify/{id}")
+    @GetMapping("/modify/{id}")
     public String modifyPost(@PathVariable Long id, Model model) {
         model.addAttribute("post", postService.getPost(id));
 
         return "post/write";
     }
-    @RequestMapping(value="/post/modify/{id}", method=RequestMethod.POST)
-    public String modifyPost(@PathVariable Long id, Post modifiedPost) {
+    @RequestMapping(value="/modify/{id}", method=RequestMethod.POST)
+    public String modifyPost(@PathVariable Long id, Post modifiedPost, Model model) {
         logger.info(modifiedPost.toString());
         postService.update(id, modifiedPost);
 
-        return "redirect:/post/list";
+        model.addAttribute("msg", "게시글을 수정하였습니다.");
+        model.addAttribute("url", "/post/list");
+        return "/alert";
     }
 
-    @RequestMapping(value="/post/delete/{id}", method=RequestMethod.POST)
-    public String deletePost(@PathVariable Long id) {
+    @RequestMapping(value="/delete/{id}", method=RequestMethod.POST)
+    public String deletePost(@PathVariable Long id, Model model) {
         String msg = postService.delete(id);
-        logger.info(msg);
-        return "redirect:/post/list";
+
+        model.addAttribute("msg", msg);
+        model.addAttribute("url", "/post/list");
+        return "/alert";
     }
 }

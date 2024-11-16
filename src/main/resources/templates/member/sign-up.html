@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head th:replace="~{fragment/head::head}"></head>
+<style>
+    .is-invalid {
+        border-color: red;
+    }
+    .is-valid {
+        border-color: green;
+    }
+    .hide {
+        display: none;
+    }
+</style>
+<body>
+<div class="container mt-5">
+    <h2 class="text-center">회원가입</h2>
+    <form id="sign-up-form" action="/member/sign-up" method="post">
+        <!-- 아이디 -->
+        <div class="mb-3">
+            <label for="userId" class="form-label">아이디</label>
+            <input type="text" class="form-control" id="userId" name="userId" placeholder="아이디를 입력하세요" required>
+
+<!--            <div id="success-id" class="hide">사용할 수 있는 아이디입니다</div>-->
+            <div id="failure-id" class="hide">아이디는 4~16글자의 숫자, 영대&#183;소문자만 가능합니다.</div>
+        </div>
+
+        <!-- 비밀번호 -->
+        <div class="mb-3">
+            <label for="userPwd" class="form-label">비밀번호</label>
+            <input type="password" class="form-control" id="userPwd" name="userPwd" placeholder="비밀번호를 입력하세요" required>
+
+<!--            <div id="success-pwd" class="hide">사용할 수 있는 비밀번호입니다</div>-->
+            <div id="failure-pwd" class="hide">비밀번호는 8~16글자의 영대&#183;소문자, 숫자, 특수문자(!, @, #, $, %, ^, &, *)를 모두 포함한 문장이어야합니다.</div>
+        </div>
+
+        <!-- 비밀번호 확인 -->
+        <div class="mb-3">
+            <label for="confirm-password" class="form-label">비밀번호 확인</label>
+            <input type="password" class="form-control" id="confirm-password" placeholder="비밀번호를 다시 입력하세요" required>
+
+<!--            <div id="success-pwd-confirm" class="hide">입력된 비밀번호가 동일합니다.</div>-->
+            <div id="failure-pwd-confirm" class="hide">입력된 비밀번호가 다릅니다.</div>
+        </div>
+
+        <!-- 이름 -->
+        <div class="mb-3">
+            <label for="name" class="form-label">이름</label>
+            <input type="text" class="form-control" id="name" name="name" placeholder="이름을 입력하세요" required>
+        </div>
+
+        <!-- 이메일 -->
+        <div class="mb-3">
+            <label for="email" class="form-label">이메일</label>
+            <input type="email" class="form-control" id="email" name="email" placeholder="이메일을 입력하세요" required>
+
+            <div id="failure-email" class="hide">이메일 형식으로 입력해주세요(example@site.com)</div>
+        </div>
+
+        <!-- 전화번호 -->
+        <div class="mb-3">
+            <label for="phone" class="form-label">전화번호</label>
+            <input type="tel" class="form-control" id="phone" name="phone" placeholder="전화번호를 입력하세요" required>
+
+            <div id="failure-phone" class="hide">하이픈(-)을 포함하여 전화번호를 입력해주세요.</div>
+        </div>
+
+        <!-- 제출 버튼 -->
+        <button type="submit" class="btn btn-primary w-100">회원가입</button>
+    </form>
+</div>
+<script>
+    const idInput = document.getElementById('userId');
+    const passwordInput = document.getElementById('userPwd');
+    const passwordConfirm = document.getElementById('confirm-password');
+    const emailInput = document.getElementById('email');
+    const phoneInput = document.getElementById('phone');
+
+    let idValid = false;
+    let pwdValid = false;
+    let pwdConfirmValid = false;
+    let emailValid = false;
+    let phoneValid = false;
+    document.getElementById('sign-up-form').onsubmit=function() {
+        if(!(idValid && pwdValid && pwdConfirmValid && emailValid && phoneValid)) {
+            alert("잘못된 입력이 존재합니다.")
+            return false;
+        }
+
+        return confirm("회원가입하시겠습니까?");
+    }
+
+    //아이디 검증
+    idInput.addEventListener("change", function() {
+        const idIncorrect = document.getElementById('failure-id');
+        const regex = /^[A-Za-z0-9]{4,16}$/;
+
+        if(regex.test(idInput.value)) {
+            idInput.classList.add('is-valid');
+            idInput.classList.remove('is-invalid');
+            idIncorrect.classList.add('hide');
+
+            idValid = true;
+        } else {
+            idInput.classList.remove('is-valid');
+            idInput.classList.add('is-invalid');
+            idIncorrect.classList.remove('hide');
+
+            idValid = false;
+        }
+    });
+
+    //비밀번호 검증
+    passwordInput.addEventListener("change", function() {
+        const pwdIncorrect = document.getElementById('failure-pwd');
+        const regex = /^(?=.*[A-Za-z])(?=.*\d|)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{4,16}$/;
+
+        if(regex.test(passwordInput.value)) {
+            passwordInput.classList.add('is-valid');
+            passwordInput.classList.remove('is-invalid');
+            pwdIncorrect.classList.add('hide');
+
+            pwdValid = true;
+        } else {
+            passwordInput.classList.remove('is-valid');
+            passwordInput.classList.add('is-invalid');
+            pwdIncorrect.classList.remove('hide');
+
+            pwdValid = false;
+        }
+
+        const confirmIncorrect = document.getElementById('failure-pwd-confirm');
+
+        if(passwordInput.value === passwordConfirm.value) {
+            passwordConfirm.classList.add('is-valid');
+            passwordConfirm.classList.remove('is-invalid');
+            confirmIncorrect.classList.add('hide');
+
+            pwdConfirmValid = true;
+        } else {
+            passwordConfirm.classList.remove('is-valid');
+            passwordConfirm.classList.add('is-invalid');
+            confirmIncorrect.classList.remove('hide');
+
+            pwdConfirmValid = false;
+        }
+    });
+
+    //비밀번호 2차 입력
+    passwordConfirm.addEventListener("change", function() {
+        const confirmIncorrect = document.getElementById('failure-pwd-confirm');
+
+        if(passwordInput.value === passwordConfirm.value) {
+            passwordConfirm.classList.add('is-valid');
+            passwordConfirm.classList.remove('is-invalid');
+            confirmIncorrect.classList.add('hide');
+
+            pwdConfirmValid = true;
+        } else {
+            passwordConfirm.classList.remove('is-valid');
+            passwordConfirm.classList.add('is-invalid');
+            confirmIncorrect.classList.remove('hide');
+
+            pwdConfirmValid = false;
+        }
+    });
+    //이메일 검증
+    emailInput.addEventListener("change", function() {
+        const emailIncorrect = document.getElementById('failure-email');
+        const regex = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/
+
+        if(regex.test(emailInput.value)) {
+            emailInput.classList.add('is-valid');
+            emailInput.classList.remove('is-invalid');
+            emailIncorrect.classList.add('hide');
+
+            emailValid = true;
+        } else {
+            emailInput.classList.remove('is-valid');
+            emailInput.classList.add('is-invalid');
+            emailIncorrect.classList.remove('hide');
+
+            emailValid = false;
+        }
+    });
+
+    //핸드폰 검증
+    phoneInput.addEventListener("change", function() {
+        const phoneIncorrect = document.getElementById('failure-phone');
+        const regex = /^(01[016789])-([0-9]{3,4})-([0-9]{4})$/;
+
+        if(regex.test(phoneInput.value)) {
+            phoneInput.classList.add('is-valid');
+            phoneInput.classList.remove('is-invalid');
+            phoneIncorrect.classList.add('hide');
+
+            phoneValid = true;
+        } else{
+            phoneInput.classList.remove('is-valid');
+            phoneInput.classList.add('is-invalid');
+            phoneIncorrect.classList.remove('hide');
+
+            phoneValid = false;
+        }
+    });
+</script>
+<!-- Bootstrap JS and dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

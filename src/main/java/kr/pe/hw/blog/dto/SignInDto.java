@@ -3,6 +3,7 @@ package kr.pe.hw.blog.dto;
 import lombok.*;
 
 @Getter
+@Setter
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor

@@ -46,11 +46,11 @@ public class MemberService implements UserDetailsService{
     }
 
     @Transactional
-    public TokenDto signIn(String username, String password) {
+    public TokenDto signIn(SignInDto signInDto) {
 
         //1. username + password 를 기반으로 Authentication 객체 생성
         //이때 authentication 은 인증 여부를 확인하는 authenticated 값이 false
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(signInDto.getUsername(), signInDto.getPassword());
 
         //2. 실제 검증. authendticate() 메서드를 통해 요청된 Member 에 대한 검증 진행
         // authenticate 메서드가 실행될 때 CustomUserDetailService 에서 만든 loadUserByUsername 메서드 실행.
@@ -78,7 +78,7 @@ public class MemberService implements UserDetailsService{
 
     // 회원가입 메서드
     @Transactional
-    public MemberDto signUp(SignUpDto signUpDto) {
+    public void signUp(SignUpDto signUpDto) {
         if(memberRepository.existsByUserId(signUpDto.getUserId())) {
             throw new IllegalArgumentException("이미 사용중인 ID 입니다.");
         }
@@ -86,6 +86,6 @@ public class MemberService implements UserDetailsService{
         String encodedPassword = passwordEncoder.encode(signUpDto.getUserPwd());
         List<String> roles = new ArrayList<>();
         roles.add("USER"); // user권한 부여
-        return MemberDto.toDto(memberRepository.save(signUpDto.toEntity(encodedPassword, roles)));
+        memberRepository.save(signUpDto.toEntity(encodedPassword, roles));
     }
 }

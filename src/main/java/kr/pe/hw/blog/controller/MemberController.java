@@ -9,8 +9,9 @@ import kr.pe.hw.blog.dto.TokenDto;
 import kr.pe.hw.blog.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -18,6 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Slf4j
 //@RestController
 @Controller
+@RequestMapping("/member")
 public class MemberController {
     private final MemberService memberService;
 
@@ -26,19 +28,21 @@ public class MemberController {
         this.memberService = memberService;
     }
 
-    @GetMapping("/member/sign-in")
-    public ModelAndView signIn() {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("/member/sign-in");
-
-        return mv;
+    @GetMapping("/sign-in")
+    public String signIn() {
+        return "/member/sign-in";
     }
-    @RequestMapping(value="/member/sign-in", method=RequestMethod.POST)
-    public String signIn(HttpServletResponse response
-                         , @RequestParam String username
-                         , @RequestParam String password) {
-
-        TokenDto token = memberService.signIn(username, password);
+    @RequestMapping(value="/sign-in", method=RequestMethod.POST)
+    public String signIn(HttpServletResponse response, Model model, @ModelAttribute SignInDto signInDto) {
+        TokenDto token = new TokenDto();
+        try {
+            token = memberService.signIn(signInDto);
+            log.info("\nJWT\naccessToken = {}\nrefreshToken = {}", token.getAccessToken(), token.getRefreshToken());
+        } catch(Exception e) {
+            model.addAttribute("msg", "존재하지 않는 회원 또는 잘못된 비밀번호입니다.");
+            model.addAttribute("url", "/member/sign-in");
+            return "/alert";
+        }
 
         Cookie cookie = new Cookie("Authorization", "Bearer_" + token.getAccessToken());
         cookie.setHttpOnly(true);
@@ -49,22 +53,41 @@ public class MemberController {
 
         response.addCookie(cookie);
 
-        log.info("request username = {}, password = {}", username, password);
-        log.info("\nJWT\naccessToken = {}\nrefreshToken = {}", token.getAccessToken(), token.getRefreshToken());
 
-        return "redirect:/post/list";
+        model.addAttribute("msg", "로그인 되었습니다.");
+        model.addAttribute("url", "/post/list");
+        return "/alert";
     }
 
-    @GetMapping("/member/sign-up")
-    public ModelAndView signUp() {
-        ModelAndView mv = new ModelAndView();
-        mv.setViewName("/member/sign-up");
-
-        return mv;
+    @GetMapping("/sign-up")
+    public String signUp() {
+        return "/member/sign-up";
     }
-    @RequestMapping(value="/member/sign-up", method=RequestMethod.POST)
-    public ResponseEntity<MemberDto> signUp(@RequestBody SignUpDto signUpDto) {
-        MemberDto savedMemberDto = memberService.signUp(signUpDto);
-        return ResponseEntity.ok(savedMemberDto);
+    @RequestMapping(value="/sign-up", method=RequestMethod.POST)
+    public String signUp(Model model, @ModelAttribute SignUpDto signUpDto) {
+        try {
+            memberService.signUp(signUpDto);
+        } catch(Exception e) {
+            model.addAttribute("msg", e.getMessage());
+            model.addAttribute("url", "/member/sign-up");
+            return "/alert";
+        }
+
+        model.addAttribute("msg", "회원가입 되었습니다.");
+        model.addAttribute("url", "/post/list");
+        return "/alert";
+    }
+
+    @RequestMapping(value="/sign-out", method=RequestMethod.POST)
+    public String signOut(HttpServletResponse response, Model model) {
+        Cookie cookie = new Cookie("Authorization", null);
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
+
+        model.addAttribute("msg", "로그아웃 되었습니다.");
+        model.addAttribute("url", "/post/list");
+
+        return "/alert";
     }
 }

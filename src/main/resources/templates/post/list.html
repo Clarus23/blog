@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragment/head::head"></head>
+<head th:replace="~{fragment/head::head}"></head>
 
 <style>
     .page-link {
@@ -25,7 +25,7 @@
 </style>
 
 <body>
-    <header th:replace="fragment/header::header"></header>
+    <header th:replace="~{fragment/header::header}"></header>
     <div class="container mt-5">
         <div class="row">
             <!-- 리스트 -->
@@ -123,7 +123,7 @@
             </div>
         </div>
     </div>
-
-    <footer th:replace="fragment/footer::footer"></footer>
+    <div id="content"> </div>
+    <footer th:replace="~{fragment/footer::footer}"></footer>
 </body>
 </html>

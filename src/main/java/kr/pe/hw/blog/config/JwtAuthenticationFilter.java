@@ -40,24 +40,14 @@ public class JwtAuthenticationFilter extends GenericFilterBean {
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader("Authorization");
 
-        // 임시 방편 나중에 수정해봐
         Cookie[] cookies = request.getCookies();
-        for(Cookie cookie : cookies) {
-            if(cookie.getName().equals("Authorization")) bearerToken = cookie.getValue();
-        } // 여기까지
+        if(cookies != null) {
+            for(Cookie cookie : cookies) {
+                if(cookie.getName().equals("Authorization")) bearerToken = cookie.getValue();
+            }
 
-//        log.info("-----------------------------------------------");
-//        log.info("requestURL : {}", request.getRequestURL());
-//        log.info("requestURI : {}", request.getRequestURI());
-//        log.info("requestMethod : {}", request.getMethod());
-//        log.info("requestHeaders : {}", request.getHeaderNames());
-//        Cookie cookies[] = request.getCookies();
-//        for(int i = 0; i < cookies.length; i++) {
-//            String name = cookies[i].getName();
-//            String value = cookies[i].getValue();
-//            logger.info(name + "=" + value);
-//        }
-//        log.info("-----------------------------------------------");
+        }
+
         if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")) {
             return bearerToken.substring(7);
         }

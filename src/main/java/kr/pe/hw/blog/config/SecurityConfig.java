@@ -27,8 +27,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/assets/**", "css/**", "js/**", "fragment/**").permitAll() //bootstrap 이용을 위해 접근 허용
-                        .requestMatchers("/", "/member/sign-up", "/member/sign-in", "/post/list").permitAll() // 회원가입, 로그인 페이지는 누구나 접근 가능
+                        .requestMatchers("/assets/**", "/css/**", "/js/**", "/fragment/**").permitAll() //bootstrap 이용을 위해 접근 허용
+                        .requestMatchers("/", "/member/sign-up", "/member/sign-in", "/post/list", "/error", "/alert").permitAll() // 회원가입, 로그인 페이지는 누구나 접근 가능
                         .requestMatchers("/post/detail/**").hasRole("USER")
                         .anyRequest().authenticated()) // 그 외의 페이지는 인증 필요
                 .formLogin(AbstractHttpConfigurer::disable)
