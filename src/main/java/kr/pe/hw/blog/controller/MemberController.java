@@ -55,7 +55,7 @@ public class MemberController {
 
 
         model.addAttribute("msg", "로그인 되었습니다.");
-        model.addAttribute("url", "/post/list");
+        model.addAttribute("url", "/");
         return "/alert";
     }
 
@@ -74,7 +74,7 @@ public class MemberController {
         }
 
         model.addAttribute("msg", "회원가입 되었습니다.");
-        model.addAttribute("url", "/post/list");
+        model.addAttribute("url", "/");
         return "/alert";
     }
 
@@ -86,7 +86,7 @@ public class MemberController {
         response.addCookie(cookie);
 
         model.addAttribute("msg", "로그아웃 되었습니다.");
-        model.addAttribute("url", "/post/list");
+        model.addAttribute("url", "/");
 
         return "/alert";
     }
