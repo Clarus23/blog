@@ -1,29 +1,45 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragment/head::head"></head>
+<head th:replace="~{fragment/head::head}"></head>
 <head>
     <script src="/js/summernote/summernote-lite.js" th:src="@{/js/summernote/summernote-lite.js}"></script>
     <script src="/js/summernote/lang/summernote-ko-KR.js" th:src="@{/js/summernote/lang/summernote-ko-KR.js}"></script>
     <link rel="stylesheet" href="/css/summernote/summernote-lite.css" th:href="@{/css/summernote/summernote-lite.css}">
+
+    <style>
+        .hidden {
+            visibility: hidden
+        }
+    </style>
 </head>
 <body>
-<header th:replace="fragment/header::header"></header>
+<header th:replace="~{fragment/header::header}"></header>
 
 <div class="container my-3">
-    <form method="post">
+    <form id="post-form" method="post" enctype="multipart/form-data">
         <input class="form-control-plaintext" type="text" id="creatorId" name="creatorId" th:value="${userId}" readonly/>
         <input class="form-control form-control-lg" type="text" id="title" name="title" th:value="${post.getTitle()}" placeholder="제목을 입력하세요"/>
         <textarea id="summernote" name="content" th:utext="${post.getContent()}"></textarea>
 
-        <button class="btn btn-dark">작성</button>
+        <input id="summernoteImages" name="summernoteImages" type="file" multiple class="hidden"/>
+        <input type="text" name="fileUrl[]" class="hidden"/>
+
+        <button id="post-submit-btn" class="btn btn-dark">작성</button>
     </form>
 </div>
 
 <script>
+    const dataTransfer = new DataTransfer(); // summernote에 올라온 image들을 저장하기 위한 dataTransfer
+    document.getElementById('post-form').onsubmit=function() {
+        document.getElementById("summernoteImages").files = dataTransfer.files; // submit이 일어나면 dataTransfer에 저장되었던 file들을 fileInput 태그에 넣어줌.
+
+        return confirm("이대로 글을 작성하시겠습니까?");
+    }
+
     $(document).ready(function() {
         //여기 아래 부분
         $('#summernote').summernote({
-            height: 300,                 // 에디터 높이
+            height: 500,                 // 에디터 높이
             minHeight: null,             // 최소 높이
             maxHeight: null,             // 최대 높이
             focus: true,                  // 에디터 로딩후 포커스를 맞출지 여부
@@ -36,13 +52,70 @@
                 ['color', ['color']],
                 ['style', ['bold', 'italic', 'underline','strikethrough', 'clear']],
                 ['para', ['ul', 'ol', 'paragraph']],
-                ['height', ['height']]
+                ['height', ['height']],
+                ['insert', ['picture', 'link', 'video']],
+                ['view', ['codeview', 'help']]
             ],
             fontNames: ['Arial', 'Arial Black', 'Comic Sans MS', 'Courier New','맑은 고딕','궁서','굴림체','굴림','돋움체','바탕체'],
-            fontSizes: ['8','9','10','11','12','14','16','18','20','22','24','28','30','36','50','72']
+            fontSizes: ['8','9','10','11','12','14','16','18','20','22','24','28','30','36','50','72'],
+            callbacks: { //이미지 첨부하는 부분
+                onImageUpload : function(files, editor, welEditable) {
+                    //다중 이미지 처리를 위해 for문 사용
+                    for(var i=0; i<files.length; i++) {
+                        imageUploader(files[i], this);
+                    }
+                }
+            }
         });
     });
+
+    /**
+     * 이미지 파일 업로드
+     */
+    function imageUploader(file, editor) {
+        const formData = new FormData();
+        formData.append("file", file);
+        $.ajax({
+            data : formData,
+            type : "POST",
+            url : "/post/image-upload",
+            contentType : false,
+            processData : false,
+            enctype : 'multipart/form-data',
+            success : function(response) {
+                const data = JSON.parse(response);
+
+                if(data.responseCode === "success") {
+                    $(editor).summernote('insertImage', data.url, function($image) {
+                        $image.css('width', "100%");
+
+                        dataTransfer.items.add(file);
+                        addFileUrl(data.url);
+                    });
+                } else {
+                    console.log("Image upload failed");
+                    alert("이미지 업로드에 실패하였습니다.");
+                }
+
+                console.log(data.url);
+                console.log(data.responseCode);
+            },
+            error : function(xhr, status, error) {
+                console.error("Image upload failed: ", error);
+                alert("이미지 업로드에 실패하였습니다.");
+            }
+        });
+    }
+    function addFileUrl(url) {
+        const newInput = document.createElement("input");
+        newInput.type = "text";
+        newInput.name = "fileUri[]";
+        newInput.classList.add('hidden');
+        newInput.value = url;
+
+        document.getElementById('post-form').appendChild(newInput);
+    }
 </script>
-<footer th:replace="fragment/footer::footer"></footer>
+<footer th:replace="~{fragment/footer::footer}"></footer>
 </body>
 </html>

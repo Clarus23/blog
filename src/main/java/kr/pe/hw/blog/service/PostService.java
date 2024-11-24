@@ -11,6 +11,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +32,15 @@ public class PostService {
      * @return post.id
      */
     public Long save(Post post) {
+        String content = post.getContent();
+
+        LocalDate now = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM");
+        String formattedNow = now.format(formatter);
+
+        content = content.replaceAll("/temp/", "/" + formattedNow + "/");
+        post.setContent(content);
+
         postRepository.save(post);
         return post.getId();
     }
