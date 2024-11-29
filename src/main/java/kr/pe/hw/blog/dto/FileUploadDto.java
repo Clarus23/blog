@@ -14,6 +14,7 @@ public class FileUploadDto {
     private String saveFileName;
     private String fileExtension;
     private Long fileSize;
+    private Long postId;
 
     static public FileUploadDto toDto(UploadFile file) {
         return FileUploadDto.builder()

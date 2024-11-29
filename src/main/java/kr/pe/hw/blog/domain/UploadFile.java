@@ -21,4 +21,8 @@ public class UploadFile extends BaseTimeEntity{
     private String fileExtension;
     @Column(nullable = false)
     private long fileSize;
+
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "post_id")
+    private Post post;
 }

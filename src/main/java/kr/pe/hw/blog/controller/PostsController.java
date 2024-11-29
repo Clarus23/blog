@@ -1,6 +1,7 @@
 package kr.pe.hw.blog.controller;
 
 import kr.pe.hw.blog.domain.Post;
+import kr.pe.hw.blog.dto.PostUploadDto;
 import kr.pe.hw.blog.service.FileService;
 import kr.pe.hw.blog.service.PostService;
 import kr.pe.hw.blog.util.SecurityUtil;
@@ -57,12 +58,11 @@ public class PostsController {
         return "post/write";
     }
     @RequestMapping(value="/write", method=RequestMethod.POST)
-    public String createPost(@ModelAttribute Post newPost, Model model
+    public String createPost(@ModelAttribute PostUploadDto newPost, Model model
                             , @RequestPart(value = "summernoteImages", required = false) MultipartFile[] images
-                            , @RequestParam(value = "fileUri") List<String> newUri) {
+                            , @RequestParam(value = "fileUri", required = false) List<String> newUri) {
         log.info(newPost.toString());
-        postService.save(newPost);
-        fileService.save(images, newUri);
+        postService.save(newPost, images, newUri);
 
         model.addAttribute("msg", "게시글을 작성하였습니다.");
         model.addAttribute("url", "/post/list");
@@ -76,9 +76,13 @@ public class PostsController {
         return "post/write";
     }
     @RequestMapping(value="/modify/{id}", method=RequestMethod.POST)
-    public String modifyPost(@PathVariable Long id, Post modifiedPost, Model model) {
+    public String modifyPost(@PathVariable Long id
+                            , @ModelAttribute PostUploadDto modifiedPost, Model model
+                            , @RequestPart(value = "summernoteImages", required = false) MultipartFile[] images
+                            , @RequestParam(value = "fileUri", required = false) List<String> newUri
+                            , @RequestParam(value = "deleteFilename", required = false) List<String> deleteFilenames) {
         log.info(modifiedPost.toString());
-        postService.update(id, modifiedPost);
+        postService.update(id, modifiedPost, images, newUri, deleteFilenames);
 
         model.addAttribute("msg", "게시글을 수정하였습니다.");
         model.addAttribute("url", "/post/list");
@@ -107,6 +111,21 @@ public class PostsController {
         }
 
         log.info("jsonObject.toString() : {}", jsonObject.toString());
+        return jsonObject.toString();
+    }
+
+    @RequestMapping(value="/image-delete", method=RequestMethod.POST)
+    @ResponseBody
+    public String imageDelete(@RequestParam("file") String filename) {
+        JsonObject jsonObject = new JsonObject();
+        log.info("filename: {}", filename);
+        try {
+            fileService.tempDelete(filename);
+            jsonObject.addProperty("responseCode", "success");
+        } catch(RuntimeException e) {
+            jsonObject.addProperty("responseCode", "error");
+        }
+
         return jsonObject.toString();
     }
 }

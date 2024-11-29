@@ -24,6 +24,8 @@
         <input id="summernoteImages" name="summernoteImages" type="file" multiple class="hidden"/>
         <input type="text" name="fileUrl[]" class="hidden"/>
 
+        <input type="text" name="deleteFilename[]" class="hidden"/>
+
         <button id="post-submit-btn" class="btn btn-dark">작성</button>
     </form>
 </div>
@@ -64,6 +66,17 @@
                     for(var i=0; i<files.length; i++) {
                         imageUploader(files[i], this);
                     }
+                },
+                onMediaDelete : function($target, editor, $editable) {
+                    if(confirm("이미지를 삭제하시겠습니까?")) {
+                        var deletedImgUrl = $target
+                            .attr('src')
+                            .split('/')
+                            .pop()
+
+                        addInput(deletedImgUrl, "deleteFilename[]")
+                        deleteSummernoteImageFile(deletedImgUrl);
+                    }
                 }
             }
         });
@@ -90,7 +103,7 @@
                         $image.css('width', "100%");
 
                         dataTransfer.items.add(file);
-                        addFileUrl(data.url);
+                        addInput(data.url, "fileUri[]");
                     });
                 } else {
                     console.log("Image upload failed");
@@ -106,14 +119,28 @@
             }
         });
     }
-    function addFileUrl(url) {
+    function addInput(url, name) {
         const newInput = document.createElement("input");
         newInput.type = "text";
-        newInput.name = "fileUri[]";
+        // newInput.name = "fileUri[]";
+        newInput.name = name;
         newInput.classList.add('hidden');
         newInput.value = url;
 
         document.getElementById('post-form').appendChild(newInput);
+    }
+
+    function deleteSummernoteImageFile(imageName) {
+        data = new FormData();
+        data.append('file', imageName);
+        $.ajax({
+            data: data,
+            type: 'POST',
+            url: '/post/image-delete',
+            contentType: false,
+            enctype: 'multipart/form-data',
+            processData: false,
+        })
     }
 </script>
 <footer th:replace="~{fragment/footer::footer}"></footer>
