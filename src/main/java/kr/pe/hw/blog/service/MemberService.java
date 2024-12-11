@@ -88,4 +88,8 @@ public class MemberService implements UserDetailsService{
         roles.add("USER"); // user권한 부여
         memberRepository.save(signUpDto.toEntity(encodedPassword, roles));
     }
+
+    public Long findUserId(String userName) {
+        return memberRepository.findIdByName(userName).orElseThrow();
+    }
 }

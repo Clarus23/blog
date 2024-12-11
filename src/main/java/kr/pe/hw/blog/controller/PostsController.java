@@ -3,6 +3,7 @@ package kr.pe.hw.blog.controller;
 import kr.pe.hw.blog.domain.Post;
 import kr.pe.hw.blog.dto.PostUploadDto;
 import kr.pe.hw.blog.service.FileService;
+import kr.pe.hw.blog.service.PostCommentService;
 import kr.pe.hw.blog.service.PostService;
 import kr.pe.hw.blog.util.SecurityUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -24,11 +25,13 @@ import java.util.List;
 public class PostsController {
     private final PostService postService;
     private final FileService fileService;
+    private final PostCommentService postCommentService;
 
     @Autowired
-    public PostsController(PostService postService, FileService fileService) {
+    public PostsController(PostService postService, FileService fileService, PostCommentService postCommentService) {
         this.postService = postService;
         this.fileService = fileService;
+        this.postCommentService = postCommentService;
     }
 
     @GetMapping("/list")
@@ -43,6 +46,7 @@ public class PostsController {
     @GetMapping("/detail/{id}")
     public String detail(@PathVariable Long id, Model model) {
         model.addAttribute("post", postService.getPost(id));
+        model.addAttribute("comments", postCommentService.viewComments(id));
 
         model.addAttribute("userId", SecurityUtil.getCurrentUser());
         model.addAttribute("userRole", SecurityUtil.getCurrentUserRole());
