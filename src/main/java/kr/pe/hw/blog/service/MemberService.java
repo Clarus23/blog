@@ -92,4 +92,10 @@ public class MemberService implements UserDetailsService{
     public Long findUserId(String userName) {
         return memberRepository.findIdByName(userName).orElseThrow();
     }
+
+    public boolean validatedAccess(String postCreator, String accessUser, String accessUserRole) {
+        if(postCreator.equals(accessUser) || accessUserRole.equals("ADMIN") || accessUserRole.equals("SUPER")) return true;
+
+        return false;
+    }
 }

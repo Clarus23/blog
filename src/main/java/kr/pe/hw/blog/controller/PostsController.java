@@ -3,6 +3,7 @@ package kr.pe.hw.blog.controller;
 import kr.pe.hw.blog.domain.Post;
 import kr.pe.hw.blog.dto.PostUploadDto;
 import kr.pe.hw.blog.service.FileService;
+import kr.pe.hw.blog.service.MemberService;
 import kr.pe.hw.blog.service.PostCommentService;
 import kr.pe.hw.blog.service.PostService;
 import kr.pe.hw.blog.util.SecurityUtil;
@@ -25,12 +26,14 @@ import java.util.List;
 public class PostsController {
     private final PostService postService;
     private final FileService fileService;
+    private final MemberService memberService;
     private final PostCommentService postCommentService;
 
     @Autowired
-    public PostsController(PostService postService, FileService fileService, PostCommentService postCommentService) {
+    public PostsController(PostService postService, FileService fileService, PostCommentService postCommentService, MemberService memberService) {
         this.postService = postService;
         this.fileService = fileService;
+        this.memberService = memberService;
         this.postCommentService = postCommentService;
     }
 
@@ -74,7 +77,15 @@ public class PostsController {
     }
     @GetMapping("/modify/{id}")
     public String modifyPost(@PathVariable Long id, Model model) {
-        model.addAttribute("post", postService.getPost(id));
+        Post post = postService.getPost(id);
+
+        if(!memberService.validatedAccess(post.getCreatorId(), SecurityUtil.getCurrentUser(), SecurityUtil.getCurrentUserRole())) {
+            model.addAttribute("msg", "잘못된 접근입니다.");
+            model.addAttribute("url", "/");
+            return "/alert";
+        }
+
+        model.addAttribute("post", post);
         model.addAttribute("userId", SecurityUtil.getCurrentUser());
 
         return "post/write";
